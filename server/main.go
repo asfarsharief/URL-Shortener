@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/asfarsharief/URL-Shortener/handler"
 	"github.com/asfarsharief/URL-Shortener/lib"
+	"github.com/asfarsharief/URL-Shortener/storage"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -21,11 +22,12 @@ func createServer() *echo.Echo {
 	e.Use(middleware.Recover())
 
 	//handler
-	urlShortnerservice := lib.NewUrlShortnerService()
+	storageHandler := storage.NewStorageHandler()
+	urlShortnerservice := lib.NewUrlShortnerService(&storageHandler)
 	urlShortnerHandler := handler.NewUrlShortnerHandler(&urlShortnerservice)
 
 	// Routes
-	e.GET("/url/:url", urlShortnerHandler.UrlShortner)
+	e.GET("shortenurl/:url", urlShortnerHandler.UrlShortner)
 
 	// Start server
 	return e
