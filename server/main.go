@@ -27,7 +27,7 @@ func createServer() *echo.Echo {
 	urlShortnerHandler := handler.NewUrlShortnerHandler(&urlShortnerservice)
 
 	// Routes
-	e.GET("shortenurl/:url", urlShortnerHandler.UrlShortner)
+	e.GET("/shorten", urlShortnerHandler.UrlShortner)
 
 	// Start server
 	return e

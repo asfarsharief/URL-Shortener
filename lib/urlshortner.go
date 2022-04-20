@@ -38,5 +38,7 @@ func (us *urlShortnerService) GetShortUrl(url string) (string, error) {
 	if urlArr[0] == "www" {
 		url = url[4:]
 	}
-	return us.storageHandler.ProcessUrl(url)
+	shortenedUrl := us.storageHandler.ProcessUrl(url)
+	fmt.Println("URL successfully processed")
+	return shortenedUrl, nil
 }

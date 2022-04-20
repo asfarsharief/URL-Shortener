@@ -2,33 +2,46 @@ package storage
 
 import (
 	"fmt"
-	"math/rand"
 
 	"github.com/asfarsharief/URL-Shortener/constants"
 )
 
-var urlMap = make(map[string]string)
-
 type StorageHandlerInterface interface {
-	ProcessUrl(url string) (string, error)
+	ProcessUrl(url string) string
 }
 type storageHandler struct {
+	urlMap    map[string]int
+	nextValue int
 }
 
 func NewStorageHandler() storageHandler {
-	return storageHandler{}
+	return storageHandler{
+		urlMap:    make(map[string]int),
+		nextValue: 1,
+	}
 }
 
-func (sh *storageHandler) ProcessUrl(url string) (string, error) {
-	if val, ok := urlMap[url]; ok {
+func (sh *storageHandler) ProcessUrl(url string) string {
+	if val, ok := sh.urlMap[url]; ok {
 		fmt.Println("URL already processed. Returning existing value")
-		return fmt.Sprintf("%s/%s", constants.UrlBasePath, val), nil
+		return fmt.Sprintf("%s/%s", constants.UrlBasePath, encodeBase62(val))
 	}
-	uniquePath := make([]rune, 6)
-	for i := range uniquePath {
-		uniquePath[i] = constants.RandomLetterRune[rand.Intn(len(constants.RandomLetterRune))]
+
+	sh.urlMap[url] = sh.nextValue
+	sh.nextValue++
+
+	return fmt.Sprintf("%s/%s", constants.UrlBasePath, encodeBase62(sh.urlMap[url]))
+}
+
+func encodeBase62(uniqueID int) string {
+	uniqueRune := []rune{}
+	for uniqueID > 0 {
+		div := uniqueID % 62
+		uniqueRune = append(uniqueRune, constants.RandomLetterRune[div])
+		uniqueID = uniqueID / 62
 	}
-	urlMap[url] = string(uniquePath)
-	fmt.Println("URL successfully processed. ", uniquePath)
-	return fmt.Sprintf("%s/%s", constants.UrlBasePath, string(uniquePath)), nil
+	for i, j := 0, len(uniqueRune)-1; i < j; i, j = i+1, j-1 {
+		uniqueRune[i], uniqueRune[j] = uniqueRune[j], uniqueRune[i]
+	}
+	return string(uniqueRune)
 }

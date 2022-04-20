@@ -18,7 +18,7 @@ func NewUrlShortnerHandler(urlShortnerService lib.UrlShortnerInterface) urlShort
 }
 
 func (us *urlShortnerHandler) UrlShortner(c echo.Context) error {
-	originalUrl := c.Param("url")
+	originalUrl := c.QueryParam("url")
 	if originalUrl == "" {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "No URL sent"})
 	}
