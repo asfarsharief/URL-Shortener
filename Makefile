@@ -15,8 +15,8 @@ show-code-coverage: test
 build:
 	@CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a --installsuffix cgo -o bin/app server/main.go
 
-image:
+image: build
 	docker build -t url-shortener:latest -f docker/Dockerfile .
 
-run-docker: image
+run-docker-image: image
 	docker run -p 3030:3030 url-shortener:latest
